@@ -1,9 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Prestamo = require('../models/prestamo.model');
-const Usuario = require('../models/usuario.model'); // si lo necesitas
-const Libro = require('../models/libro.model');     // si lo necesitas
-const verificarAdmin = require('../middlewares/verificarAdmin'); // si tienes middleware de rol
+const verificarAdmin = require('../middlewares/verificarAdmin');
 
 // ✅ Endpoint para obtener todos los préstamos (solo admin)
 router.get('/todos', verificarAdmin, async (req, res) => {
@@ -14,7 +12,7 @@ router.get('/todos', verificarAdmin, async (req, res) => {
 
     res.json(prestamos);
   } catch (error) {
-    console.error('Error al obtener préstamos:', error);
+    console.error('❌ Error al obtener préstamos:', error);
     res.status(500).json({ mensaje: 'Error al obtener préstamos' });
   }
 });

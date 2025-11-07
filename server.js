@@ -5,21 +5,32 @@ require('dotenv').config(); // ✅ Carga las variables desde .env
 
 const app = express();
 
-// Middlewares
-app.use(cors());
+// 🌐 Middlewares globales
+app.use(cors({
+  origin: true, // o especifica tu frontend: ['https://tu-frontend.vercel.app']
+  credentials: true
+}));
 app.use(express.json());
 
-// Conexión a MongoDB usando la variable de entorno
-mongoose.connect(process.env.MONGO_URI)
+// 🔗 Conexión a MongoDB
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
   .then(() => console.log('✅ Conectado a MongoDB'))
   .catch(err => console.error('❌ Error al conectar a MongoDB:', err));
 
-// Rutas
+// 📦 Rutas principales
 app.use('/api/auth', require('./routes/auth.routes'));
 app.use('/api/libros', require('./routes/libros.routes'));
-app.use('/api/prestamos', require('./routes/prestamos.routes')); // ✅ ESTA ES LA CLAVE
+app.use('/api/prestamos', require('./routes/prestamos.routes'));
 
-// Puerto
+// 🛡 Ruta de prueba protegida (opcional)
+app.get('/api/ping', (req, res) => {
+  res.json({ mensaje: 'Servidor activo y escuchando' });
+});
+
+// 🚀 Inicio del servidor
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Servidor escuchando en http://localhost:${PORT}`);

@@ -18,7 +18,8 @@ const libroSchema = new Schema({
   },
   anio: {
     type: Number,
-    required: true
+    required: true,
+    min: 0
   },
   disponible: {
     type: Boolean,

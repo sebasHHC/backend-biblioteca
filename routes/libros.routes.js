@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const auth = require('../middlewares/auth.middleware');
-
+const authMiddleware = require('../middlewares/auth.middleware');
+const verificarAdmin = require('../middlewares/verificarAdmin');
 
 const {
   obtenerLibros,
@@ -10,9 +10,16 @@ const {
   eliminarLibro
 } = require('../controllers/libros.controller');
 
-router.get('/', auth, obtenerLibros);
-router.post('/', auth, crearLibro);
-router.put('/:id', auth, actualizarLibro);
-router.delete('/:id', auth, eliminarLibro);
+// Estudiantes: obtener libros disponibles
+router.get('/', authMiddleware, obtenerLibros);
+
+// Admin: crear libro
+router.post('/', authMiddleware, verificarAdmin, crearLibro);
+
+// Admin: actualizar libro
+router.put('/:id', authMiddleware, verificarAdmin, actualizarLibro);
+
+// Admin: eliminar libro
+router.delete('/:id', authMiddleware, verificarAdmin, eliminarLibro);
 
 module.exports = router;

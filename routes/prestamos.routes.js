@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const authMiddleware = require('../middlewares/auth.middleware');
-const verificarAdmin = require('../middlewares/verificarAdmin'); // ✅ asegúrate de que este archivo exista
+const verificarAdmin = require('../middlewares/verificarAdmin');
 const Prestamo = require('../models/prestamo.model');
 const Libro = require('../models/libro.model');
 
-// ✅ Obtener préstamos del usuario autenticado
+// Estudiante: ver sus préstamos
 router.get('/mios', authMiddleware, async (req, res) => {
   try {
     const prestamos = await Prestamo.find({ usuario: req.usuario.id }).populate('libro');
@@ -16,8 +16,8 @@ router.get('/mios', authMiddleware, async (req, res) => {
   }
 });
 
-// ✅ Obtener todos los préstamos (solo para administradores)
-router.get('/todos', verificarAdmin, async (req, res) => {
+// Admin: ver todos los préstamos
+router.get('/todos', authMiddleware, verificarAdmin, async (req, res) => {
   try {
     const prestamos = await Prestamo.find()
       .populate('libro', 'titulo autor')
@@ -29,7 +29,7 @@ router.get('/todos', verificarAdmin, async (req, res) => {
   }
 });
 
-// ✅ Devolver un préstamo
+// Estudiante: devolver un libro
 router.put('/:id/devolver', authMiddleware, async (req, res) => {
   try {
     const prestamo = await Prestamo.findById(req.params.id);
@@ -58,7 +58,7 @@ router.put('/:id/devolver', authMiddleware, async (req, res) => {
   }
 });
 
-// ✅ Solicitar un préstamo
+// Estudiante: solicitar préstamo
 router.post('/', authMiddleware, async (req, res) => {
   try {
     const { libroId } = req.body;

@@ -10,11 +10,6 @@ module.exports = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log('👤 Verificando rol de usuario:', decoded);
-
-    if (decoded.rol !== 'admin') {
-      return res.status(403).json({ mensaje: 'Acceso denegado: solo administradores' });
-    }
 
     req.usuario = {
       id: decoded.id || decoded._id,
