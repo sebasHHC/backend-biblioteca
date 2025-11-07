@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const authMiddleware = require('../middlewares/auth.middleware');
-const verificarAdmin = require('../middlewares/verificarAdmin'); // ✅ nuevo middleware
+const verificarAdmin = require('../middlewares/verificarAdmin'); // ✅ asegúrate de que este archivo exista
 const Prestamo = require('../models/prestamo.model');
 const Libro = require('../models/libro.model');
 
