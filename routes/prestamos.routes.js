@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const authMiddleware = require('../middlewares/auth.middleware');
-const verificarAdmin = require('../middlewares/verificarAdmin');
 const Prestamo = require('../models/prestamo.model');
 const Libro = require('../models/libro.model');
+const authMiddleware = require('../middlewares/auth.middleware');
+const verificarAdmin = require('../middlewares/verificarAdmin');
 
 // Estudiante: ver sus préstamos
 router.get('/mios', authMiddleware, async (req, res) => {
@@ -26,35 +26,6 @@ router.get('/todos', authMiddleware, verificarAdmin, async (req, res) => {
   } catch (err) {
     console.error('❌ Error al obtener todos los préstamos:', err);
     res.status(500).json({ mensaje: 'Error al obtener todos los préstamos' });
-  }
-});
-
-// Estudiante: devolver un libro
-router.put('/:id/devolver', authMiddleware, async (req, res) => {
-  try {
-    const prestamo = await Prestamo.findById(req.params.id);
-    if (!prestamo) {
-      return res.status(404).json({ mensaje: 'Préstamo no encontrado' });
-    }
-
-    if (prestamo.usuario.toString() !== req.usuario.id) {
-      return res.status(403).json({ mensaje: 'No tienes permiso para devolver este préstamo' });
-    }
-
-    if (prestamo.estado === 'devuelto') {
-      return res.status(400).json({ mensaje: 'Este préstamo ya fue devuelto' });
-    }
-
-    prestamo.estado = 'devuelto';
-    prestamo.fechaDevolucion = new Date();
-    await prestamo.save();
-
-    await Libro.findByIdAndUpdate(prestamo.libro, { disponible: true });
-
-    res.json({ mensaje: 'Libro devuelto correctamente' });
-  } catch (err) {
-    console.error('❌ Error al devolver préstamo:', err);
-    res.status(500).json({ mensaje: 'Error al devolver el préstamo' });
   }
 });
 
@@ -86,6 +57,35 @@ router.post('/', authMiddleware, async (req, res) => {
   } catch (err) {
     console.error('❌ Error al crear préstamo:', err);
     res.status(500).json({ mensaje: 'Error al crear el préstamo' });
+  }
+});
+
+// Estudiante: devolver préstamo
+router.put('/:id/devolver', authMiddleware, async (req, res) => {
+  try {
+    const prestamo = await Prestamo.findById(req.params.id);
+    if (!prestamo) {
+      return res.status(404).json({ mensaje: 'Préstamo no encontrado' });
+    }
+
+    if (prestamo.usuario.toString() !== req.usuario.id) {
+      return res.status(403).json({ mensaje: 'No tienes permiso para devolver este préstamo' });
+    }
+
+    if (prestamo.estado === 'devuelto') {
+      return res.status(400).json({ mensaje: 'Este préstamo ya fue devuelto' });
+    }
+
+    prestamo.estado = 'devuelto';
+    prestamo.fechaDevolucion = new Date();
+    await prestamo.save();
+
+    await Libro.findByIdAndUpdate(prestamo.libro, { disponible: true });
+
+    res.json({ mensaje: 'Libro devuelto correctamente' });
+  } catch (err) {
+    console.error('❌ Error al devolver préstamo:', err);
+    res.status(500).json({ mensaje: 'Error al devolver el préstamo' });
   }
 });
 
